@@ -50,7 +50,7 @@ function Add({ id, editMode }: AddProps) {
       <Grid container>
         <Grid item md={6}>
           <PageTitleWrapper>
-            <PageHeader title={'New FAQ'} />
+            <PageHeader title={editMode ? 'Edit FAQ' : 'New FAQ'} />
           </PageTitleWrapper>
         </Grid>
         <Grid item md={6}>

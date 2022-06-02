@@ -6,19 +6,13 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { Divider } from '@mui/material';
+import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded';
 
-interface DialogConfirmProps {
-  disabled: boolean;
+interface DialogDeleteProps {
   title: string;
-  fileName?: string;
-  handleSubmit?: () => void;
+  id: string;
 }
-export default function DialogConfirm({
-  disabled,
-  fileName,
-  title,
-  handleSubmit
-}: DialogConfirmProps) {
+export default function DialogDelete({ title, id }: DialogDeleteProps) {
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
@@ -30,15 +24,12 @@ export default function DialogConfirm({
   };
 
   const submitAndClose = () => {
-    handleSubmit();
     setOpen(false);
   };
 
   return (
     <div>
-      <Button variant="contained" onClick={handleClickOpen} disabled={disabled}>
-        Confirm
-      </Button>
+      <DeleteForeverRoundedIcon onClick={handleClickOpen} color="error" />
       <Dialog
         open={open}
         onClose={handleClose}
@@ -50,17 +41,6 @@ export default function DialogConfirm({
           textAlign: 'center'
         }}
       >
-        <DialogTitle
-          id="alert-dialog-title"
-          sx={{
-            fontWeight: 'bold',
-            fontSize: '17px',
-            color: '#000'
-          }}
-        >
-          {title}
-        </DialogTitle>
-        <Divider></Divider>
         <DialogContent>
           <DialogContentText
             id="alert-dialog-description"
@@ -74,7 +54,7 @@ export default function DialogConfirm({
               }
             }}
           >
-            Are use sure publish <span>{fileName}</span>?
+            Are you sure complete this action?
           </DialogContentText>
         </DialogContent>
         <DialogActions>

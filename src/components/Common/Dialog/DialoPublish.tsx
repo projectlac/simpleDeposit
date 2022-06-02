@@ -7,18 +7,16 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { Divider } from '@mui/material';
 
-interface DialogConfirmProps {
+interface DialoPublishProps {
   disabled: boolean;
   title: string;
-  fileName?: string;
-  handleSubmit?: () => void;
+  id: string;
 }
-export default function DialogConfirm({
+export default function DialoPublish({
   disabled,
-  fileName,
-  title,
-  handleSubmit
-}: DialogConfirmProps) {
+  id,
+  title
+}: DialoPublishProps) {
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
@@ -30,14 +28,13 @@ export default function DialogConfirm({
   };
 
   const submitAndClose = () => {
-    handleSubmit();
     setOpen(false);
   };
 
   return (
     <div>
       <Button variant="contained" onClick={handleClickOpen} disabled={disabled}>
-        Confirm
+        Publish
       </Button>
       <Dialog
         open={open}
@@ -74,7 +71,7 @@ export default function DialogConfirm({
               }
             }}
           >
-            Are use sure publish <span>{fileName}</span>?
+            Are use sure publish this banner?
           </DialogContentText>
         </DialogContent>
         <DialogActions>

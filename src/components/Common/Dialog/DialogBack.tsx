@@ -75,10 +75,10 @@ export default function DialogBack({ link, title }: DialogBackProps) {
         </DialogContent>
         <Divider></Divider>
         <DialogActions>
-          <Button variant="contained" onClick={handleClose}>
+          <Button variant="outlined" onClick={handleClose}>
             Disagree
           </Button>
-          <Button variant="contained" onClick={handleAgree} autoFocus>
+          <Button variant="outlined" onClick={handleAgree} autoFocus>
             Agree
           </Button>
         </DialogActions>

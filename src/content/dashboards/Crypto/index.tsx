@@ -12,6 +12,8 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { AuthContext } from 'src/App';
+import DialogDelete from 'src/components/Common/Dialog/DialogDelete';
+import DialoPublish from 'src/components/Common/Dialog/DialoPublish';
 import ButtonWrap from 'src/components/Header/ButtonWrap';
 import PageHeader from 'src/components/Header/PageHeader';
 import PageTitleWrapper from 'src/components/PageTitleWrapper';
@@ -62,7 +64,10 @@ const data = [
 function DashboardCrypto() {
   const { handleChangeMessageToast, handleOpenToast } = useContext(AuthContext);
   const [selectedImage, setSeletedImage] = useState<string>('2');
+  const [defaultImage, setDefaultImage] = useState<string>('2');
 
+  const [checkChangeSelectionId, setCheckChangeSelectionId] =
+    useState<boolean>(false);
   const getImageUrl = () => {
     return data.filter((d) => d.id === selectedImage)[0].imageUrl;
   };
@@ -78,12 +83,11 @@ function DashboardCrypto() {
   };
 
   useEffect(() => {
-    const tempData = selectedImage;
-    return history.listen(() => {
-      console.log('after', tempData);
-    });
+    if (defaultImage !== selectedImage) {
+      setCheckChangeSelectionId(true);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [history, selectedImage]);
+  }, [selectedImage]);
 
   return (
     <>
@@ -108,9 +112,11 @@ function DashboardCrypto() {
                 New Banner +
               </Button>
             </Link>
-            <Button variant="contained" disabled>
-              Publish
-            </Button>
+            <DialoPublish
+              id={selectedImage}
+              disabled={!checkChangeSelectionId}
+              title={'Publish'}
+            />
           </ButtonWrap>
         </Grid>
       </Grid>
@@ -140,16 +146,15 @@ function DashboardCrypto() {
                   {d.name} <span>({d.size})</span>
                 </Typography>
               </Box>
-              <Box width={100} textAlign="right">
+              <Box
+                width={100}
+                sx={{ display: 'flex' }}
+                justifyContent="flex-end"
+              >
                 {selectedImage === d.id && (
                   <CheckCircleIcon sx={{ color: 'green', mr: 1 }} />
                 )}
-                <DeleteForeverRoundedIcon
-                  sx={{ color: 'red' }}
-                  onClick={() => {
-                    deleteBaner(d.id);
-                  }}
-                />
+                <DialogDelete id={d.id} title={'banner'} />
               </Box>
             </ItemImage>
           ))}

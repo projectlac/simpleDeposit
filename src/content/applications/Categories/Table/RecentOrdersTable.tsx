@@ -16,6 +16,7 @@ import {
 import { useEffect, useState } from 'react';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { Link } from 'react-router-dom';
+import DialogDelete from 'src/components/Common/Dialog/DialogDelete';
 import history from 'src/utils/history';
 const RecentOrdersTable = () => {
   const [cryptoOrders, setCryptoOrders] = useState<any>([
@@ -214,9 +215,14 @@ const RecentOrdersTable = () => {
                                 color="text.primary"
                                 gutterBottom
                                 noWrap
+                                sx={{ display: 'flex' }}
                               >
                                 <EditIcon />
-                                <DeleteForeverOutlinedIcon />
+
+                                <DialogDelete
+                                  id={item.id}
+                                  title={'Categories'}
+                                />
                               </Typography>
                             </TableCell>
                             <TableCell width={'5%'}>

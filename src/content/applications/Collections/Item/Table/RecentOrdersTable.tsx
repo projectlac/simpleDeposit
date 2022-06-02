@@ -14,6 +14,7 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import DialogDelete from 'src/components/Common/Dialog/DialogDelete';
 
 const RecentOrdersTable = () => {
   const [cryptoOrders, setCryptoOrders] = useState<any>([
@@ -204,9 +205,10 @@ const RecentOrdersTable = () => {
                       color="text.primary"
                       gutterBottom
                       noWrap
+                      sx={{ display: 'flex' }}
                     >
                       <EditIcon />
-                      <DeleteForeverOutlinedIcon />
+                      <DialogDelete id={item.id} title={'Categories'} />
                     </Typography>
                   </TableCell>
                 </TableRow>

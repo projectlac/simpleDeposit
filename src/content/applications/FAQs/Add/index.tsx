@@ -13,7 +13,7 @@ function AddNewPack() {
   return (
     <>
       <Helmet>
-        <title>{edit ? 'Edit Categories' : 'New Categories'}</title>
+        <title>{edit ? 'Edit FAQ' : 'New FAQ'}</title>
       </Helmet>
 
       <Add id={id} editMode={edit}></Add>

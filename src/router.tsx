@@ -55,6 +55,10 @@ const FAQs = Loader(
   lazy(() => import('src/content/applications/FAQs/Table/RecentOrders'))
 );
 const AddFAQs = Loader(lazy(() => import('src/content/applications/FAQs/Add')));
+const EditFAQs = Loader(
+  lazy(() => import('src/content/applications/FAQs/Add'))
+);
+
 // Applications
 
 // Status
@@ -128,10 +132,10 @@ const routes = (isLogin, role) => [
         path: '/special-collections/add',
         element: <AddSpecial />
       },
-      // {
-      //   path: '/groups/edit/:id',
-      //   element: <EditGroups />
-      // },
+      {
+        path: '/special-collections/edit/:id',
+        element: <AddSpecial />
+      },
       {
         path: '/item',
         element: <Item />
@@ -139,11 +143,11 @@ const routes = (isLogin, role) => [
       {
         path: '/item/add',
         element: <AddItem />
+      },
+      {
+        path: '/item/edit/:id',
+        element: <AddItem />
       }
-      // {
-      //   path: '/individual/edit/:id',
-      //   element: <EditIndividual />
-      // }
     ]
   },
   {
@@ -162,11 +166,11 @@ const routes = (isLogin, role) => [
       {
         path: '/add',
         element: <AddCategories />
+      },
+      {
+        path: '/edit/:id',
+        element: <AddCategories />
       }
-      // {
-      //   path: '/edit/:id',
-      //   element: <EditContentPack />
-      // }
     ]
   },
   {
@@ -185,11 +189,11 @@ const routes = (isLogin, role) => [
       {
         path: '/add',
         element: <AddFAQs />
+      },
+      {
+        path: '/edit/:id',
+        element: <AddFAQs />
       }
-      // {
-      //   path: '/edit/:id',
-      //   element: <EditSurvey />
-      // }
     ]
   },
   // {

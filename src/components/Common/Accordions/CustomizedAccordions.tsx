@@ -10,6 +10,8 @@ import Typography from '@mui/material/Typography';
 import { Box } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined';
+import DialogDelete from '../Dialog/DialogDelete';
+import { Link } from 'react-router-dom';
 
 const Accordion = styled((props: AccordionProps) => (
   <MuiAccordion disableGutters elevation={0} square {...props} />
@@ -95,9 +97,12 @@ export default function CustomizedAccordions({
               color="text.primary"
               gutterBottom
               noWrap
+              sx={{ display: 'flex' }}
             >
-              <EditIcon />
-              <DeleteForeverOutlinedIcon color="error" />
+              <Link to={`edit/${id}`}>
+                <EditIcon />
+              </Link>
+              <DialogDelete id={id} title={'Categories'} />
             </Typography>
           </Box>
         </AccordionSummary>
