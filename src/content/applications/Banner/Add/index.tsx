@@ -1,15 +1,21 @@
 import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined';
 import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded';
+
 import { Box, Container, Grid, Typography } from '@mui/material';
 import { styled } from '@mui/system';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useContext, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Helmet } from 'react-helmet-async';
+import { useMutation } from 'react-query';
+import { useNavigate } from 'react-router';
+import bannerApi from 'src/api/banner';
+import { AuthContext } from 'src/App';
 import DialogBack from 'src/components/Common/Dialog/DialogBack';
 import DialogConfirm from 'src/components/Common/Dialog/DialogConfirm';
 import ButtonWrap from 'src/components/Header/ButtonWrap';
 import PageHeader from 'src/components/Header/PageHeader';
 import PageTitleWrapper from 'src/components/PageTitleWrapper';
+import { addBannerFunc } from 'src/function/banner';
 
 const ItemImage = styled(Box)(
   ({ theme }) => `
@@ -35,6 +41,9 @@ const DropzoneBox = styled(Box)(
 );
 
 function AddBanner() {
+  const { handleOpenToast, handleChangeMessageToast } = useContext(AuthContext);
+  const nav = useNavigate();
+
   const [myFiles, setMyFiles] = useState([]);
 
   const onDrop = useCallback(
@@ -47,10 +56,28 @@ function AddBanner() {
     onDrop
   });
 
+  const { mutate, data, isLoading } = useMutation(addBannerFunc, {
+    onSuccess: () => {
+      nav(`${process.env.REACT_APP_BASE_NAME}/banner/`);
+      handleChangeMessageToast(data.data.message);
+      handleOpenToast();
+    },
+    onError: () => {
+      handleChangeMessageToast(data.data.message);
+      handleOpenToast();
+    }
+  });
+
   const removeAll = () => {
     setMyFiles([]);
   };
 
+  const onSubmit = () => {
+    const formData = new FormData();
+
+    formData.append('Image', myFiles[0]);
+    mutate(formData);
+  };
   const files = myFiles.map((file, i) => (
     <ItemImage key={i} width={'100%'}>
       <Box width={'calc(100% - 150px)'}>
@@ -96,6 +123,8 @@ function AddBanner() {
               disabled={myFiles.length === 0 ? true : false}
               title="Publish"
               fileName={myFiles[0]?.name}
+              handleSubmit={onSubmit}
+              isLoading={isLoading}
             ></DialogConfirm>
           </ButtonWrap>
         </Grid>

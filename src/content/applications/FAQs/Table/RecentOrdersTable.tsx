@@ -1,35 +1,27 @@
 import { Box, Card } from '@mui/material';
-import { useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
+import { useQuery } from 'react-query';
+import { AuthContext } from 'src/App';
 import CustomizedAccordions from 'src/components/Common/Accordions/CustomizedAccordions';
+import { getFAQFunc } from 'src/function/faq';
 
 const RecentOrdersTable = () => {
-  const [cryptoOrders, setCryptoOrders] = useState<any>([
-    {
-      id: '1',
-      title: 'Art1',
-      detail: `It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English.`
-    },
-    {
-      id: '2',
-      title: 'Art2',
-      detail: `It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English.`
-    },
-    {
-      id: '3',
-      title: 'Art3',
-      detail: `It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English.`
-    },
-    {
-      id: '4',
-      title: 'Art4',
-      detail: `It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English.`
-    },
-    {
-      id: '5',
-      title: 'Art5',
-      detail: `It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English.`
+  const { updated } = useContext(AuthContext);
+
+  const { data, status, refetch } = useQuery('faq', getFAQFunc, {
+    enabled: false,
+    refetchOnWindowFocus: false
+  });
+
+  useEffect(() => {
+    if (status === 'success') {
+      setCryptoOrders(data.data);
     }
-  ]);
+  }, [status, data]);
+  useEffect(() => {
+    refetch();
+  }, [updated]);
+  const [cryptoOrders, setCryptoOrders] = useState<any>([]);
 
   return (
     <Box
@@ -42,9 +34,9 @@ const RecentOrdersTable = () => {
         {cryptoOrders.map((d, i) => (
           <CustomizedAccordions
             num={i + 1}
-            title={d.title}
+            title={d.question}
             key={d.id}
-            detail={d.detail}
+            detail={d.answer}
             id={d.id}
           />
         ))}

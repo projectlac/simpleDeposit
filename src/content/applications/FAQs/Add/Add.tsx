@@ -7,13 +7,18 @@ import {
   Typography
 } from '@mui/material';
 import { useFormik } from 'formik';
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+import { useMutation } from 'react-query';
+import { useNavigate } from 'react-router';
+import faqApi from 'src/api/faqs';
+import { AuthContext } from 'src/App';
 import DialogBack from 'src/components/Common/Dialog/DialogBack';
 import DialogConfirm from 'src/components/Common/Dialog/DialogConfirm';
 import ButtonWrap from 'src/components/Header/ButtonWrap';
 import PageHeader from 'src/components/Header/PageHeader';
 import PageTitleWrapper from 'src/components/PageTitleWrapper';
 import TinyEditor from 'src/components/TinyEditor/TinyEditor';
+import { addFAQFunc } from 'src/function/faq';
 import * as yup from 'yup';
 
 interface AddProps {
@@ -21,11 +26,25 @@ interface AddProps {
   editMode: boolean;
 }
 function Add({ id, editMode }: AddProps) {
+  const [currency, setCurrency] = useState<string>('');
   const validationSchema = yup.object({
     question: yup.string().required('Question is required'),
     answer: yup.string().required('Answer is required')
   });
+  const { handleOpenToast, handleChangeMessageToast } = useContext(AuthContext);
+  const nav = useNavigate();
 
+  const { mutate, data, isLoading } = useMutation(addFAQFunc, {
+    onSuccess: () => {
+      nav(`${process.env.REACT_APP_BASE_NAME}/faqs/`);
+      handleChangeMessageToast('Create FAQ successfully!!');
+      handleOpenToast();
+    },
+    onError: () => {
+      handleChangeMessageToast(data.data.data.message);
+      handleOpenToast();
+    }
+  });
   const formik = useFormik({
     initialValues: {
       question: '',
@@ -33,7 +52,22 @@ function Add({ id, editMode }: AddProps) {
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      alert(JSON.stringify(values, null, 2));
+      const formData = new FormData();
+      formData.append('Question', values.question);
+      formData.append('Answer', values.answer);
+      if (editMode) {
+        formData.append('id', id);
+
+        faqApi.updateFaq(formData).then((res) => {
+          if (res.data.success) {
+            nav(`${process.env.REACT_APP_BASE_NAME}/faqs/`);
+          }
+          handleChangeMessageToast(res.data.message);
+          handleOpenToast();
+        });
+      } else {
+        mutate(formData);
+      }
     }
   });
   // Then inside the component body
@@ -44,6 +78,20 @@ function Add({ id, editMode }: AddProps) {
   const handleSubmit = () => {
     formik.handleSubmit();
   };
+
+  useEffect(() => {
+    faqApi.getFAQById(id).then((res) => {
+      if (res.data.success) {
+        formik.handleChange({
+          target: { name: 'question', value: res.data.data.question }
+        });
+        formik.handleChange({
+          target: { name: 'answer', value: res.data.data.answer }
+        });
+        setCurrency(res.data.data.answer);
+      }
+    });
+  }, [id]);
 
   return (
     <Box component={'form'} onSubmit={formik.handleSubmit}>
@@ -110,7 +158,10 @@ function Add({ id, editMode }: AddProps) {
                 >
                   Anwser
                 </Typography>
-                <TinyEditor defaultValue="" changeBody={changeBody} />
+                <TinyEditor
+                  defaultValue={editMode ? currency : ''}
+                  changeBody={changeBody}
+                />
               </Box>
             </Grid>
           </Grid>

@@ -11,10 +11,12 @@ interface DialoPublishProps {
   disabled: boolean;
   title: string;
   id: string;
+  handleSubmit: () => void;
 }
 export default function DialoPublish({
   disabled,
   id,
+  handleSubmit,
   title
 }: DialoPublishProps) {
   const [open, setOpen] = React.useState(false);
@@ -28,6 +30,7 @@ export default function DialoPublish({
   };
 
   const submitAndClose = () => {
+    handleSubmit();
     setOpen(false);
   };
 

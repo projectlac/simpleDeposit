@@ -13,58 +13,68 @@ import {
   TableRow,
   Typography
 } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
+import { useMutation, useQuery } from 'react-query';
 import { Link } from 'react-router-dom';
 import DialogDelete from 'src/components/Common/Dialog/DialogDelete';
+import {
+  getCategoriesFunc,
+  orderCategoriesFunc
+} from 'src/function/categories';
 import history from 'src/utils/history';
+import _ from 'lodash';
+import { AuthContext } from 'src/App';
 const RecentOrdersTable = () => {
+  const { handleOpenToast, updated, handleChangeMessageToast } =
+    useContext(AuthContext);
+
+  const { data, status, refetch } = useQuery('banner', getCategoriesFunc, {
+    enabled: false,
+    refetchOnWindowFocus: false
+  });
+
   const [cryptoOrders, setCryptoOrders] = useState<any>([
-    {
-      id: '1',
-      title: 'Art1',
-      url: '/art1',
-      iconImage:
-        'https://image/wp-content/uploads/2017/10/h%C3%ACnh-%E1%BA%A3nh.jpg'
-    },
-    {
-      id: '2',
-      title: 'Art2',
-      url: '/art2',
-      iconImage:
-        'https://image/wp-content/uploads/2017/10/h%C3%ACnh-%E1%BA%A3nh.jpg'
-    },
-    {
-      id: '3',
-      title: 'Art3',
-      url: '/art3',
-      iconImage:
-        'https://image/wp-content/uploads/2017/10/h%C3%ACnh-%E1%BA%A3nh.jpg'
-    },
-    {
-      id: '4',
-      title: 'Art4',
-      url: '/art4',
-      iconImage:
-        'https://image/wp-content/uploads/2017/10/h%C3%ACnh-%E1%BA%A3nh.jpg'
-    },
-    {
-      id: '5',
-      title: 'Art5',
-      url: '/art5',
-      iconImage:
-        'https://image/wp-content/uploads/2017/10/h%C3%ACnh-%E1%BA%A3nh.jpg'
-    }
+    { title: '', id: '', url: '', imageUrl: '' }
   ]);
+  const [compareData, setCompareData] = useState<any>([
+    { title: '', id: '', url: '', imageUrl: '' }
+  ]);
+  useEffect(() => {
+    if (status === 'success') {
+      setCryptoOrders(data.data);
+      setCompareData(data.data);
+    }
+  }, [status, data]);
+
+  const { mutate } = useMutation(orderCategoriesFunc, {
+    onSuccess: () => {
+      handleChangeMessageToast('Update category order successfully!');
+      handleOpenToast();
+    },
+    onError: () => {
+      handleChangeMessageToast('Something went wrong!!');
+      handleOpenToast();
+    }
+  });
 
   useEffect(() => {
     const tempData = cryptoOrders;
     return history.listen(() => {
-      console.log('after', tempData);
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [history, cryptoOrders]);
+      const param = tempData.map((d, i) => {
+        const { id } = d;
+        return { id, orderNum: i };
+      });
+      if (!_.isEqual(compareData, cryptoOrders)) {
+        mutate(param);
+      }
 
+      // console.log('after', param);
+    });
+  }, [history, cryptoOrders]);
+  useEffect(() => {
+    refetch();
+  }, [updated]);
   const reorder = (list, startIndex, endIndex) => {
     const result = Array.from(list);
     const [removed] = result.splice(startIndex, 1);
@@ -146,100 +156,102 @@ const RecentOrdersTable = () => {
                       }
                     }}
                   >
-                    {cryptoOrders.map((item, index) => (
-                      <Draggable
-                        key={item.id}
-                        draggableId={item.id}
-                        index={index}
-                      >
-                        {(provided, snapshot) => (
-                          <TableRow
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                          >
-                            <TableCell width={'5%'}>
-                              <Typography color="#2b7fbb">
-                                {index + 1}
-                              </Typography>
-                            </TableCell>
+                    {cryptoOrders &&
+                      cryptoOrders.map((item, index) => (
+                        <Draggable
+                          key={item.id}
+                          draggableId={item.id}
+                          index={index}
+                        >
+                          {(provided, snapshot) => (
+                            <TableRow
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                            >
+                              <TableCell width={'5%'}>
+                                <Typography color="#2b7fbb">
+                                  {index + 1}
+                                </Typography>
+                              </TableCell>
 
-                            <TableCell width={'20%'}>
-                              <Link
-                                to={`./edit/${item.id}`}
-                                style={{ textDecoration: 'none' }}
-                              >
+                              <TableCell width={'20%'}>
+                                <Link
+                                  to={`./edit/${item.id}`}
+                                  style={{ textDecoration: 'none' }}
+                                >
+                                  <Typography
+                                    variant="body1"
+                                    fontWeight="bold"
+                                    color="text.primary"
+                                    gutterBottom
+                                    noWrap
+                                    sx={{
+                                      display: 'flex',
+                                      alignItems: 'center'
+                                    }}
+                                  >
+                                    {item.title}
+                                  </Typography>
+                                </Link>
+                              </TableCell>
+                              <TableCell width={'20%'}>
                                 <Typography
                                   variant="body1"
                                   fontWeight="bold"
                                   color="text.primary"
                                   gutterBottom
                                   noWrap
-                                  sx={{
-                                    display: 'flex',
-                                    alignItems: 'center'
-                                  }}
                                 >
-                                  {item.title.substring(0, 50) +
-                                    `${item.title.length >= 50 ? '...' : ''}`}
+                                  {item.url}
                                 </Typography>
-                              </Link>
-                            </TableCell>
-                            <TableCell width={'20%'}>
-                              <Typography
-                                variant="body1"
-                                fontWeight="bold"
-                                color="text.primary"
-                                gutterBottom
-                                noWrap
-                              >
-                                {item.url}
-                              </Typography>
-                            </TableCell>
-                            <TableCell width={'40%'}>
-                              <Typography
-                                variant="body1"
-                                fontWeight="bold"
-                                color="text.primary"
-                                gutterBottom
-                                noWrap
-                              >
-                                {item.iconImage}
-                              </Typography>
-                            </TableCell>
+                              </TableCell>
+                              <TableCell width={'40%'}>
+                                <Typography
+                                  variant="body1"
+                                  fontWeight="bold"
+                                  color="text.primary"
+                                  gutterBottom
+                                  noWrap
+                                >
+                                  {item.imageName}
+                                </Typography>
+                              </TableCell>
 
-                            <TableCell width={'10%'}>
-                              <Typography
-                                variant="body1"
-                                fontWeight="bold"
-                                color="text.primary"
-                                gutterBottom
-                                noWrap
-                                sx={{ display: 'flex' }}
-                              >
-                                <EditIcon />
+                              <TableCell width={'10%'}>
+                                <Typography
+                                  variant="body1"
+                                  fontWeight="bold"
+                                  color="text.primary"
+                                  gutterBottom
+                                  noWrap
+                                  sx={{ display: 'flex' }}
+                                >
+                                  <Link to={`edit/${item.id}`}>
+                                    <EditIcon sx={{ color: '#2b7fbb' }} />
+                                  </Link>
 
-                                <DialogDelete
-                                  id={item.id}
-                                  title={'Categories'}
-                                />
-                              </Typography>
-                            </TableCell>
-                            <TableCell width={'5%'}>
-                              <Typography
-                                variant="body1"
-                                fontWeight="bold"
-                                color="text.primary"
-                                gutterBottom
-                                noWrap
-                              >
-                                <MenuIcon />
-                              </Typography>
-                            </TableCell>
-                          </TableRow>
-                        )}
-                      </Draggable>
-                    ))}
+                                  <DialogDelete
+                                    id={item.id}
+                                    title={'Categories'}
+                                  />
+                                </Typography>
+                              </TableCell>
+                              <TableCell width={'5%'}>
+                                <Typography
+                                  variant="body1"
+                                  fontWeight="bold"
+                                  color="text.primary"
+                                  gutterBottom
+                                  noWrap
+                                >
+                                  <MenuIcon />
+                                </Typography>
+                              </TableCell>
+                            </TableRow>
+                          )}
+                        </Draggable>
+                      ))}
                     {provided.placeholder}
                   </TableBody>
                 )}

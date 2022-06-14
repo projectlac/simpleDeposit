@@ -1,10 +1,10 @@
 export interface LoginForm {
-  userName: string;
+  email: string;
   password: string;
 }
-export interface ParamChangePassword{
-  email:string,
-  temporaryPassword:string,
-  newPassword:string,
-  confirmNewPassword:string
+export interface ParamChangePassword {
+  email: string;
+  temporaryPassword: string;
+  newPassword: string;
+  confirmNewPassword: string;
 }

@@ -12,63 +12,29 @@ import {
   TableRow,
   Typography
 } from '@mui/material';
-import { useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
+import { useQuery } from 'react-query';
 import { Link } from 'react-router-dom';
+import { AuthContext } from 'src/App';
 import DialogDelete from 'src/components/Common/Dialog/DialogDelete';
+import { getCollectionItemFunc } from 'src/function/collection';
 
 const RecentOrdersTable = () => {
-  const [cryptoOrders, setCryptoOrders] = useState<any>([
-    {
-      id: '1',
-      title: 'Childhood Memory 1',
-      belongTo: 'Childhood memory',
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Recusandae, libero! ',
-      url: '/theconllection1',
-      image:
-        'https://image/wp-content/uploads/2017/10/h%C3%ACnh-%E1%BA%A3nh.jpg'
-    },
-    {
-      id: '2',
-      title: 'Childhood Memory 2',
-      belongTo: 'Childhood memory',
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Recusandae, libero! ',
-      url: '/theconllection2',
-      image:
-        'https://image/wp-content/uploads/2017/10/h%C3%ACnh-%E1%BA%A3nh.jpg'
-    },
-    {
-      id: '3',
-      title: 'Childhood Memory 3',
-      belongTo: 'Childhood memory',
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Recusandae, libero! ',
-      url: '/theconllection3',
-      image:
-        'https://image/wp-content/uploads/2017/10/h%C3%ACnh-%E1%BA%A3nh.jpg'
-    },
-    {
-      id: '4',
-      title: 'Childhood Memory 4',
-      belongTo: 'Childhood memory',
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Recusandae, libero! ',
-      url: '/theconllection4',
-      image:
-        'https://image/wp-content/uploads/2017/10/h%C3%ACnh-%E1%BA%A3nh.jpg'
-    },
-    {
-      id: '5',
-      title: 'Childhood Memory 5',
-      belongTo: 'Childhood memory',
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Recusandae, libero! ',
-      url: '/theconllection5',
-      image:
-        'https://image/wp-content/uploads/2017/10/h%C3%ACnh-%E1%BA%A3nh.jpg'
+  const { updated } = useContext(AuthContext);
+
+  const { data, status, refetch } = useQuery('banner', getCollectionItemFunc, {
+    enabled: false,
+    refetchOnWindowFocus: false
+  });
+  useEffect(() => {
+    refetch();
+  }, [updated]);
+  useEffect(() => {
+    if (status === 'success') {
+      setCryptoOrders(data.data);
     }
-  ]);
+  }, [status, data]);
+  const [cryptoOrders, setCryptoOrders] = useState<any>([]);
 
   return (
     <Box
@@ -147,8 +113,7 @@ const RecentOrdersTable = () => {
                           alignItems: 'center'
                         }}
                       >
-                        {item.title.substring(0, 50) +
-                          `${item.title.length >= 50 ? '...' : ''}`}
+                        {item?.title}
                       </Typography>
                     </Link>
                   </TableCell>
@@ -168,12 +133,13 @@ const RecentOrdersTable = () => {
                           alignItems: 'center'
                         }}
                       >
-                        {item.description.substring(0, 50) +
-                          `${item.description.length >= 50 ? '...' : ''}`}
+                        {item.description &&
+                          `${item.description.slice(0, 40)} 
+                                    ${item.description.length > 40 && '...'}`}
                       </Typography>
                     </Link>
                   </TableCell>
-                  <TableCell>{item.belongTo}</TableCell>
+                  <TableCell>{item.parentName}</TableCell>
                   <TableCell>
                     <Typography
                       variant="body1"
@@ -182,7 +148,7 @@ const RecentOrdersTable = () => {
                       gutterBottom
                       noWrap
                     >
-                      {item.url}
+                      {item.collectionUrl}
                     </Typography>
                   </TableCell>
                   <TableCell>
@@ -193,8 +159,7 @@ const RecentOrdersTable = () => {
                       gutterBottom
                       noWrap
                     >
-                      {item.image.substring(0, 50) +
-                        `${item.image.length >= 50 ? '...' : ''}`}
+                      {item.imageName}
                     </Typography>
                   </TableCell>
 
@@ -207,7 +172,12 @@ const RecentOrdersTable = () => {
                       noWrap
                       sx={{ display: 'flex' }}
                     >
-                      <EditIcon />
+                      <Link
+                        to={`./edit/${item.id}`}
+                        style={{ textDecoration: 'none' }}
+                      >
+                        <EditIcon sx={{ color: '#2b7fbb' }} />
+                      </Link>
                       <DialogDelete id={item.id} title={'Categories'} />
                     </Typography>
                   </TableCell>

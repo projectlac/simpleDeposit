@@ -13,60 +13,25 @@ import {
   TableRow,
   Typography
 } from '@mui/material';
-import { useEffect, useState } from 'react';
+import _ from 'lodash';
+import { useContext, useEffect, useState } from 'react';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
+import { useMutation, useQuery } from 'react-query';
 import { Link } from 'react-router-dom';
+import { AuthContext } from 'src/App';
 import DialogDelete from 'src/components/Common/Dialog/DialogDelete';
+import {
+  getCollectionFunc,
+  orderCollectionFunc
+} from 'src/function/collection';
 import history from 'src/utils/history';
 
 const RecentOrdersTable = () => {
-  const [cryptoOrders, setCryptoOrders] = useState<any>([
-    {
-      id: '1',
-      title: 'Childhood Memory 1',
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Recusandae, libero! ',
-      url: '/theconllection1',
-      image:
-        'https://image/wp-content/uploads/2017/10/h%C3%ACnh-%E1%BA%A3nh.jpg'
-    },
-    {
-      id: '2',
-      title: 'Childhood Memory 2',
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Recusandae, libero! ',
-      url: '/theconllection2',
-      image:
-        'https://image/wp-content/uploads/2017/10/h%C3%ACnh-%E1%BA%A3nh.jpg'
-    },
-    {
-      id: '3',
-      title: 'Childhood Memory 3',
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Recusandae, libero! ',
-      url: '/theconllection3',
-      image:
-        'https://image/wp-content/uploads/2017/10/h%C3%ACnh-%E1%BA%A3nh.jpg'
-    },
-    {
-      id: '4',
-      title: 'Childhood Memory 4',
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Recusandae, libero! ',
-      url: '/theconllection4',
-      image:
-        'https://image/wp-content/uploads/2017/10/h%C3%ACnh-%E1%BA%A3nh.jpg'
-    },
-    {
-      id: '5',
-      title: 'Childhood Memory 5',
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Recusandae, libero! ',
-      url: '/theconllection5',
-      image:
-        'https://image/wp-content/uploads/2017/10/h%C3%ACnh-%E1%BA%A3nh.jpg'
-    }
-  ]);
+  const { handleOpenToast, updated, handleChangeMessageToast } =
+    useContext(AuthContext);
+  const [cryptoOrders, setCryptoOrders] = useState<any>([]);
+  const [compareData, setCompareData] = useState<any>([]);
+
   const reorder = (list, startIndex, endIndex) => {
     const result = Array.from(list);
     const [removed] = result.splice(startIndex, 1);
@@ -75,14 +40,42 @@ const RecentOrdersTable = () => {
     return result;
   };
 
+  const { data, status, refetch } = useQuery('banner', getCollectionFunc, {
+    enabled: false,
+    refetchOnWindowFocus: false
+  });
+  const { mutate } = useMutation(orderCollectionFunc, {
+    onSuccess: () => {
+      handleChangeMessageToast('Update category order successfully!');
+      handleOpenToast();
+    },
+    onError: () => {
+      handleChangeMessageToast('Something went wrong!!');
+      handleOpenToast();
+    }
+  });
+  useEffect(() => {
+    refetch();
+  }, [updated]);
+
+  useEffect(() => {
+    if (status === 'success') {
+      setCryptoOrders(data.data);
+      setCompareData(data.data);
+    }
+  }, [status, data]);
+
   useEffect(() => {
     const tempData = cryptoOrders;
     return history.listen(() => {
-      const listId = tempData.map((d) => {
+      const listId = tempData.map((d, index) => {
         const { id } = d;
-        return { id };
+        return { id, orderNum: index };
       });
-      console.log('after', listId);
+
+      if (!_.isEqual(compareData, cryptoOrders)) {
+        mutate(listId);
+      }
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [history, cryptoOrders]);
@@ -196,8 +189,7 @@ const RecentOrdersTable = () => {
                                     alignItems: 'center'
                                   }}
                                 >
-                                  {item.title.substring(0, 50) +
-                                    `${item.title.length >= 50 ? '...' : ''}`}
+                                  {item.title}
                                 </Typography>
                               </Link>
                             </TableCell>
@@ -217,10 +209,9 @@ const RecentOrdersTable = () => {
                                     alignItems: 'center'
                                   }}
                                 >
-                                  {item.description.substring(0, 50) +
-                                    `${
-                                      item.description.length >= 50 ? '...' : ''
-                                    }`}
+                                  {item.description &&
+                                    `${item.description.slice(0, 40)} 
+                                    ${item.description.length > 40 && '...'}`}
                                 </Typography>
                               </Link>
                             </TableCell>
@@ -232,7 +223,7 @@ const RecentOrdersTable = () => {
                                 gutterBottom
                                 noWrap
                               >
-                                {item.url}
+                                {item.collectionUrl}
                               </Typography>
                             </TableCell>
                             <TableCell width={'40%'}>
@@ -243,7 +234,7 @@ const RecentOrdersTable = () => {
                                 gutterBottom
                                 noWrap
                               >
-                                {item.image}
+                                {item.imageName}
                               </Typography>
                             </TableCell>
 
@@ -256,11 +247,13 @@ const RecentOrdersTable = () => {
                                 noWrap
                                 sx={{ display: 'flex' }}
                               >
-                                <EditIcon />
-                                <DialogDelete
-                                  id={item.id}
-                                  title={'Categories'}
-                                />
+                                <Link
+                                  to={`./edit/${item.id}`}
+                                  style={{ textDecoration: 'none' }}
+                                >
+                                  <EditIcon sx={{ color: '#2b7fbb' }} />
+                                </Link>
+                                <DialogDelete id={item.id} title={'Special'} />
                               </Typography>
                             </TableCell>
                             <TableCell width={'5%'}>

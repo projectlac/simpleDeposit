@@ -55,9 +55,6 @@ const FAQs = Loader(
   lazy(() => import('src/content/applications/FAQs/Table/RecentOrders'))
 );
 const AddFAQs = Loader(lazy(() => import('src/content/applications/FAQs/Add')));
-const EditFAQs = Loader(
-  lazy(() => import('src/content/applications/FAQs/Add'))
-);
 
 // Applications
 

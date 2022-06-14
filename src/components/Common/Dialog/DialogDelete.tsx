@@ -7,12 +7,19 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { Divider } from '@mui/material';
 import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded';
+import categoriesApi from 'src/api/categoriesApi';
+import { AuthContext } from 'src/App';
+import bannerApi from 'src/api/banner';
+import faqApi from 'src/api/faqs';
+import collectionApi from 'src/api/collectionApi';
 
 interface DialogDeleteProps {
   title: string;
   id: string;
 }
 export default function DialogDelete({ title, id }: DialogDeleteProps) {
+  const { handleChangeMessageToast, updateSuccess, handleOpenToast } =
+    React.useContext(AuthContext);
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
@@ -24,6 +31,43 @@ export default function DialogDelete({ title, id }: DialogDeleteProps) {
   };
 
   const submitAndClose = () => {
+    switch (title) {
+      case 'Categories':
+        categoriesApi.deleteCategories(id).then((res) => {
+          handleChangeMessageToast(res.data.message);
+          handleOpenToast();
+          updateSuccess();
+        });
+        break;
+      case 'banner':
+        bannerApi.deleteBanner(id).then((res) => {
+          handleChangeMessageToast(res.data.message);
+          handleOpenToast();
+          updateSuccess();
+        });
+        break;
+      case 'FAQs':
+        faqApi.deleteFaq(id).then((res) => {
+          handleChangeMessageToast(res.data.message);
+          handleOpenToast();
+          updateSuccess();
+        });
+        break;
+      case 'Special':
+        collectionApi.deleteCollection(id).then((res) => {
+          handleChangeMessageToast(res.data.message);
+          handleOpenToast();
+          updateSuccess();
+        });
+        break;
+      default:
+        collectionApi.deleteCollection(id).then((res) => {
+          handleChangeMessageToast(res.data.message);
+          handleOpenToast();
+          updateSuccess();
+        });
+        break;
+    }
     setOpen(false);
   };
 

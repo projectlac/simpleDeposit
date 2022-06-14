@@ -1,23 +1,25 @@
-import * as React from 'react';
+import { Divider } from '@mui/material';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import { Divider } from '@mui/material';
+import * as React from 'react';
 
 interface DialogConfirmProps {
   disabled: boolean;
   title: string;
   fileName?: string;
   handleSubmit?: () => void;
+  isLoading?: boolean;
 }
 export default function DialogConfirm({
   disabled,
   fileName,
   title,
-  handleSubmit
+  handleSubmit,
+  isLoading = false
 }: DialogConfirmProps) {
   const [open, setOpen] = React.useState(false);
 

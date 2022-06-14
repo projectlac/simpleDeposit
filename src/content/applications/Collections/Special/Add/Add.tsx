@@ -9,13 +9,18 @@ import {
   Typography
 } from '@mui/material';
 import { useFormik } from 'formik';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
+import { useMutation } from 'react-query';
+import { useNavigate } from 'react-router';
+import collectionApi from 'src/api/collectionApi';
+import { AuthContext } from 'src/App';
 import DialogBack from 'src/components/Common/Dialog/DialogBack';
 import DialogConfirm from 'src/components/Common/Dialog/DialogConfirm';
 import ButtonWrap from 'src/components/Header/ButtonWrap';
 import PageHeader from 'src/components/Header/PageHeader';
 import PageTitleWrapper from 'src/components/PageTitleWrapper';
+import { addCollectionFunc } from 'src/function/collection';
 import * as yup from 'yup';
 
 const DropzoneBox = styled(Box)(
@@ -35,6 +40,25 @@ interface AddProps {
   editMode: boolean;
 }
 function Add({ id, editMode }: AddProps) {
+  const { handleOpenToast, handleChangeMessageToast } = useContext(AuthContext);
+  const nav = useNavigate();
+  const [currencyImage, setCurrencyImage] = useState<string>('');
+
+  const { mutate, data, isLoading } = useMutation(addCollectionFunc, {
+    onSuccess: () => {
+      nav(
+        `${process.env.REACT_APP_BASE_NAME}/collections/special-collections/`
+      );
+
+      handleChangeMessageToast('Create collection successfully');
+      handleOpenToast();
+    },
+    onError: () => {
+      handleChangeMessageToast(data.data.data.message);
+      handleOpenToast();
+    }
+  });
+
   const validationSchema = yup.object({
     title: yup.string().required('Title is required'),
     url: yup.string().required('URL is required'),
@@ -49,8 +73,29 @@ function Add({ id, editMode }: AddProps) {
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      alert(JSON.stringify(values, null, 2));
-      console.log(myFiles);
+      const formData = new FormData();
+      formData.append('Title', values.title);
+      formData.append('CollectionUrl', values.url);
+      formData.append('Description', values.description);
+      formData.append('IsSpecial', 'true');
+
+      if (myFiles && myFiles[0]) {
+        formData.append('Image', myFiles[0]);
+      }
+      if (editMode) {
+        formData.append('Id', id);
+        collectionApi.updatecollection(formData).then((res) => {
+          if (res.data.success) {
+            nav(
+              `${process.env.REACT_APP_BASE_NAME}/collections/special-collections/`
+            );
+          }
+          handleChangeMessageToast(res.data.message);
+          handleOpenToast();
+        });
+      } else {
+        mutate(formData);
+      }
     }
   });
   // Then inside the component body
@@ -106,12 +151,34 @@ function Add({ id, editMode }: AddProps) {
       </Box>
     </Box>
   ));
+  useEffect(() => {
+    collectionApi.getCategoriesById(id).then((res) => {
+      if (res.data.success) {
+        formik.handleChange({
+          target: { name: 'title', value: res.data.data.title }
+        });
+        formik.handleChange({
+          target: { name: 'url', value: res.data.data.collectionUrl }
+        });
+        formik.handleChange({
+          target: { name: 'description', value: res.data.data.description }
+        });
+        setCurrencyImage(res.data.data.imageUrl);
+      }
+    });
+  }, [id]);
   return (
     <Box component={'form'} onSubmit={formik.handleSubmit}>
       <Grid container>
         <Grid item md={6}>
           <PageTitleWrapper>
-            <PageHeader title={'New Special Collections'} />
+            <PageHeader
+              title={
+                editMode
+                  ? 'Edit Special Collections'
+                  : 'New Special Collections'
+              }
+            />
           </PageTitleWrapper>
         </Grid>
         <Grid item md={6}>
@@ -122,7 +189,7 @@ function Add({ id, editMode }: AddProps) {
             ></DialogBack>
 
             <DialogConfirm
-              disabled={files.length === 0 ? true : false}
+              disabled={editMode ? false : files.length === 0 ? true : false}
               title="Publish"
               handleSubmit={handleSubmit}
             ></DialogConfirm>
@@ -250,6 +317,9 @@ function Add({ id, editMode }: AddProps) {
                 )}
 
                 <Box mt={3}>{files.length > 0 && files}</Box>
+                {!files[0] && currencyImage && (
+                  <img src={currencyImage} width={200} />
+                )}
               </Box>
             </Grid>
           </Grid>

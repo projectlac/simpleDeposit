@@ -100,19 +100,14 @@ export default function CustomizedAccordions({
               sx={{ display: 'flex' }}
             >
               <Link to={`edit/${id}`}>
-                <EditIcon />
+                <EditIcon sx={{ color: '#2b7fbb' }} />
               </Link>
-              <DialogDelete id={id} title={'Categories'} />
+              <DialogDelete id={id} title={'FAQs'} />
             </Typography>
           </Box>
         </AccordionSummary>
         <AccordionDetails>
-          <Typography>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-            malesuada lacus ex, sit amet blandit leo lobortis eget. Lorem ipsum
-            dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada
-            lacus ex, sit amet blandit leo lobortis eget.
-          </Typography>
+          <Box dangerouslySetInnerHTML={{ __html: detail }}></Box>
         </AccordionDetails>
       </Accordion>
     </Box>

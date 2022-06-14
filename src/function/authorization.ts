@@ -3,7 +3,7 @@ import userApi from 'src/api/userApi';
 
 export async function loginFunc({ email, password }) {
   const respon = await loginApi.login({
-    userName: email,
+    email: email,
     password: password
   });
   return respon;

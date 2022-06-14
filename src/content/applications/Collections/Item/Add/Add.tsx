@@ -12,13 +12,18 @@ import {
   Typography
 } from '@mui/material';
 import { useFormik } from 'formik';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
+import { useMutation } from 'react-query';
+import { useNavigate } from 'react-router';
+import collectionApi from 'src/api/collectionApi';
+import { AuthContext } from 'src/App';
 import DialogBack from 'src/components/Common/Dialog/DialogBack';
 import DialogConfirm from 'src/components/Common/Dialog/DialogConfirm';
 import ButtonWrap from 'src/components/Header/ButtonWrap';
 import PageHeader from 'src/components/Header/PageHeader';
 import PageTitleWrapper from 'src/components/PageTitleWrapper';
+import { addCollectionFunc } from 'src/function/collection';
 import * as yup from 'yup';
 
 const DropzoneBox = styled(Box)(
@@ -39,10 +44,28 @@ interface AddProps {
 }
 function Add({ id, editMode }: AddProps) {
   // const [selectCollection, setSelectCollection] = React.useState<string>('');
+  const { handleOpenToast, handleChangeMessageToast } = useContext(AuthContext);
+  const nav = useNavigate();
+  const [currencyImage, setCurrencyImage] = useState<string>('');
+
+  const { mutate, data, isLoading } = useMutation(addCollectionFunc, {
+    onSuccess: () => {
+      nav(`${process.env.REACT_APP_BASE_NAME}/collections/item/`);
+
+      handleChangeMessageToast('Create collection successfully');
+      handleOpenToast();
+    },
+    onError: () => {
+      handleChangeMessageToast(data.data.data.message);
+      handleOpenToast();
+    }
+  });
+
+  const [listSpecial, setListSpecial] = useState([]);
   const validationSchema = yup.object({
     title: yup.string().required('Title is required'),
     url: yup.string().required('URL is required'),
-    belongTo: yup.string().required('URL is required'),
+    belongTo: yup.string().required('This field is required'),
     description: yup.string().required('Description is required')
   });
 
@@ -55,8 +78,28 @@ function Add({ id, editMode }: AddProps) {
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      alert(JSON.stringify(values, null, 2));
-      console.log(myFiles);
+      const formData = new FormData();
+      formData.append('Title', values.title);
+      formData.append('CollectionUrl', values.url);
+      formData.append('Description', values.description);
+      formData.append('ParentId', values.belongTo);
+      formData.append('IsSpecial', 'false');
+
+      if (myFiles && myFiles[0]) {
+        formData.append('Image', myFiles[0]);
+      }
+      if (editMode) {
+        formData.append('Id', id);
+        collectionApi.updatecollection(formData).then((res) => {
+          if (res.data.success) {
+            nav(`${process.env.REACT_APP_BASE_NAME}/collections/item/`);
+          }
+          handleChangeMessageToast(res.data.message);
+          handleOpenToast();
+        });
+      } else {
+        mutate(formData);
+      }
     }
   });
   // Then inside the component body
@@ -84,6 +127,41 @@ function Add({ id, editMode }: AddProps) {
   const removeAll = () => {
     setMyFiles([]);
   };
+
+  useEffect(() => {
+    collectionApi.getCollection().then((res) => {
+      if (res.data.success) {
+        setListSpecial(res.data.data);
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    if (id) {
+      collectionApi.getCategoriesById(id).then((res) => {
+        if (res.data.success) {
+          let belongTo = '';
+          formik.handleChange({
+            target: { name: 'title', value: res.data.data.title }
+          });
+          if (res.data.data.parentId) {
+            belongTo = res.data.data.parentId;
+          }
+          formik.handleChange({
+            target: { name: 'belongTo', value: belongTo }
+          });
+          formik.handleChange({
+            target: { name: 'url', value: res.data.data.collectionUrl }
+          });
+          formik.handleChange({
+            target: { name: 'description', value: res.data.data.description }
+          });
+
+          setCurrencyImage(res.data.data.imageUrl);
+        }
+      });
+    }
+  }, [id]);
 
   const files = myFiles.map((file, i) => (
     <Box
@@ -162,10 +240,11 @@ function Add({ id, editMode }: AddProps) {
                     displayEmpty
                   >
                     <MenuItem value={''}>--</MenuItem>
-
-                    <MenuItem value={'Memory 1'}>Memory 1</MenuItem>
-                    <MenuItem value={'Memory 2'}>Memory 2</MenuItem>
-                    <MenuItem value={'Memory 3'}>Memory 3</MenuItem>
+                    {listSpecial.map((d, i) => (
+                      <MenuItem value={d.id} key={i}>
+                        {d.title}
+                      </MenuItem>
+                    ))}
                   </Select>
                 </FormControl>
               </Box>
@@ -286,6 +365,9 @@ function Add({ id, editMode }: AddProps) {
                 )}
 
                 <Box mt={3}>{files.length > 0 && files}</Box>
+                {!files[0] && currencyImage && (
+                  <img src={currencyImage} width={200} />
+                )}
               </Box>
             </Grid>
           </Grid>

@@ -11,22 +11,19 @@ import {
   Typography
 } from '@mui/material';
 import { useFormik } from 'formik';
-import { useMutation } from 'react-query';
+import { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-// import logo from 'src/assets/images/logo/Image 9.png';
+import loginApi from 'src/api/loginApi';
+import { AuthContext } from 'src/App';
+
 import BpCheckbox from 'src/components/Common/BpCheckbox';
-import { loginFunc } from 'src/function/authorization';
 
 import * as yup from 'yup';
 
 function Login() {
+  const { handleLoginIn, handleOpenToast, handleChangeMessageToast } =
+    useContext(AuthContext);
   const nav = useNavigate();
-  const { mutate, data } = useMutation(loginFunc, {
-    onSuccess: () => {
-      localStorage.setItem('access_token', data.data.token);
-    },
-    onError: () => {}
-  });
 
   const validationSchema = yup.object({
     email: yup
@@ -45,11 +42,20 @@ function Login() {
       password: ''
     },
     validationSchema: validationSchema,
-    onSubmit: (values) => {
-      mutate({
-        email: values.email,
-        password: values.password
-      });
+    onSubmit: async (values) => {
+      const { email, password } = values;
+      try {
+        await loginApi.login({ email: email, password }).then((res) => {
+          if (res.data.success) {
+            localStorage.setItem('access_token', res.data.data.token);
+            handleLoginIn();
+            nav(`${process.env.REACT_APP_BASE_NAME}/banner/`);
+          } else {
+            handleChangeMessageToast(res.data.message);
+            handleOpenToast();
+          }
+        });
+      } catch (error) {}
     }
   });
 
