@@ -1,7 +1,5 @@
-import { Button, Grid } from '@mui/material';
+import { Grid } from '@mui/material';
 import { Helmet } from 'react-helmet-async';
-import { Link } from 'react-router-dom';
-import ButtonWrap from 'src/components/Header/ButtonWrap';
 import PageHeader from 'src/components/Header/PageHeader';
 import PageTitleWrapper from 'src/components/PageTitleWrapper';
 import RecentOrdersTable from './RecentOrdersTable';
@@ -19,11 +17,11 @@ function RecentOrders() {
           </PageTitleWrapper>
         </Grid>
         <Grid item md={6}>
-          <ButtonWrap>
+          {/* <ButtonWrap>
             <Link to={'add'} style={{ textDecoration: 'none' }}>
               <Button variant="contained">Add New + </Button>
             </Link>
-          </ButtonWrap>
+          </ButtonWrap> */}
         </Grid>
       </Grid>
       <RecentOrdersTable />
