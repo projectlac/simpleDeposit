@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import {
   Box,
@@ -18,6 +19,7 @@ import ButtonWrap from 'src/components/Header/ButtonWrap';
 import PageHeader from 'src/components/Header/PageHeader';
 import PageTitleWrapper from 'src/components/PageTitleWrapper';
 import { getBannerFunc, updateBannerFunc } from 'src/function/banner';
+import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded';
 
 const ItemImage = styled(Box)(
   ({ theme }) => `
@@ -29,37 +31,6 @@ const ItemImage = styled(Box)(
         align-items:center;
 `
 );
-
-const data0 = [
-  {
-    id: '1',
-    name: 'Image banner 1',
-    size: '1234 kB',
-    imageUrl:
-      'https://thietbiketnoi.com/wp-content/uploads/2019/12/mau-anh-bia-cover-facebook-kich-thuoc-chuan-dep-6.jpg'
-  },
-  {
-    id: '2',
-    name: 'Image banner 2',
-    size: '1234 kB',
-    imageUrl:
-      'https://startuanit.net/wp-content/uploads/2021/06/anh-bia-facebook-ve-cuoc-song32.png'
-  },
-  {
-    id: '3',
-    name: 'Image banner 3',
-    size: '1234 kB',
-    imageUrl:
-      'https://thietbiketnoi.com/wp-content/uploads/2019/12/mau-anh-bia-cover-facebook-kich-thuoc-chuan-dep-6.jpg'
-  },
-  {
-    id: '4',
-    name: 'Image banner 4',
-    size: '1234 kB',
-    imageUrl:
-      'https://thietbiketnoi.com/wp-content/uploads/2019/12/mau-anh-bia-cover-facebook-kich-thuoc-chuan-dep-6.jpg'
-  }
-];
 
 function DashboardCrypto() {
   const { handleOpenToast, updated, handleChangeMessageToast } =
@@ -100,7 +71,6 @@ function DashboardCrypto() {
       );
       handleOpenToast();
     }
-    console.log(id);
   };
 
   useEffect(() => {
@@ -197,7 +167,16 @@ function DashboardCrypto() {
                   {selectedImage === d.id && (
                     <CheckCircleIcon sx={{ color: 'green', mr: 1 }} />
                   )}
-                  <DialogDelete id={d.id} title={'banner'} />
+                  {selectedImage === d.id ? (
+                    <DeleteForeverRoundedIcon
+                      onClick={() => {
+                        deleteBaner(d.id);
+                      }}
+                      color="error"
+                    />
+                  ) : (
+                    <DialogDelete id={d.id} title={'banner'} />
+                  )}
                 </Box>
               </ItemImage>
             ))}

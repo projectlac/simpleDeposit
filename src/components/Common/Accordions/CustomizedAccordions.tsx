@@ -1,17 +1,16 @@
-import * as React from 'react';
-import { styled } from '@mui/material/styles';
 import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp';
+import EditIcon from '@mui/icons-material/Edit';
+import { Box } from '@mui/material';
 import MuiAccordion, { AccordionProps } from '@mui/material/Accordion';
+import MuiAccordionDetails from '@mui/material/AccordionDetails';
 import MuiAccordionSummary, {
   AccordionSummaryProps
 } from '@mui/material/AccordionSummary';
-import MuiAccordionDetails from '@mui/material/AccordionDetails';
+import { styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
-import { Box } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined';
-import DialogDelete from '../Dialog/DialogDelete';
+import * as React from 'react';
 import { Link } from 'react-router-dom';
+import DialogDelete from '../Dialog/DialogDelete';
 
 const Accordion = styled((props: AccordionProps) => (
   <MuiAccordion disableGutters elevation={0} square {...props} />

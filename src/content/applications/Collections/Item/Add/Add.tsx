@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined';
 import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded';
 import {
@@ -23,6 +24,7 @@ import DialogConfirm from 'src/components/Common/Dialog/DialogConfirm';
 import ButtonWrap from 'src/components/Header/ButtonWrap';
 import PageHeader from 'src/components/Header/PageHeader';
 import PageTitleWrapper from 'src/components/PageTitleWrapper';
+import TinyEditor from 'src/components/TinyEditor/TinyEditor';
 import { addCollectionFunc } from 'src/function/collection';
 import * as yup from 'yup';
 
@@ -44,11 +46,13 @@ interface AddProps {
 }
 function Add({ id, editMode }: AddProps) {
   // const [selectCollection, setSelectCollection] = React.useState<string>('');
+  const [currency, setCurrency] = useState<string>('');
+
   const { handleOpenToast, handleChangeMessageToast } = useContext(AuthContext);
   const nav = useNavigate();
   const [currencyImage, setCurrencyImage] = useState<string>('');
 
-  const { mutate, data, isLoading } = useMutation(addCollectionFunc, {
+  const { mutate, data } = useMutation(addCollectionFunc, {
     onSuccess: () => {
       nav(`${process.env.REACT_APP_BASE_NAME}/collections/item/`);
 
@@ -156,12 +160,16 @@ function Add({ id, editMode }: AddProps) {
           formik.handleChange({
             target: { name: 'description', value: res.data.data.description }
           });
-
+          setCurrency(res.data.data.description);
           setCurrencyImage(res.data.data.imageUrl);
         }
       });
     }
   }, [id]);
+
+  const changeBody = (data: string) => {
+    formik.handleChange({ target: { name: 'description', value: data } });
+  };
 
   const files = myFiles.map((file, i) => (
     <Box
@@ -206,7 +214,7 @@ function Add({ id, editMode }: AddProps) {
             ></DialogBack>
 
             <DialogConfirm
-              disabled={files.length === 0 ? true : false}
+              disabled={editMode ? false : files.length === 0 ? true : false}
               title="Publish"
               handleSubmit={handleSubmit}
             ></DialogConfirm>
@@ -311,7 +319,11 @@ function Add({ id, editMode }: AddProps) {
                 >
                   Description
                 </Typography>
-                <TextField
+                <TinyEditor
+                  defaultValue={editMode ? currency : ''}
+                  changeBody={changeBody}
+                />
+                {/* <TextField
                   multiline
                   fullWidth
                   rows={6}
@@ -325,7 +337,7 @@ function Add({ id, editMode }: AddProps) {
                   helperText={
                     formik.touched.description && formik.errors.description
                   }
-                />
+                /> */}
               </Box>
               <Box mt={3}>
                 <Typography
@@ -366,7 +378,7 @@ function Add({ id, editMode }: AddProps) {
 
                 <Box mt={3}>{files.length > 0 && files}</Box>
                 {!files[0] && currencyImage && (
-                  <img src={currencyImage} width={200} />
+                  <img src={currencyImage} width={200} alt="" />
                 )}
               </Box>
             </Grid>

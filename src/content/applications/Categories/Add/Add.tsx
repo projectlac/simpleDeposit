@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined';
 import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded';
 import { Box, Grid, styled, TextField, Typography } from '@mui/material';
@@ -46,7 +47,7 @@ function Add({ id, editMode }: AddProps) {
   const { handleOpenToast, handleChangeMessageToast } = useContext(AuthContext);
   const [currencyImage, setCurrencyImage] = useState<string>('');
   const nav = useNavigate();
-  const { mutate, data, isLoading } = useMutation(addCategoriesFunc, {
+  const { mutate, data } = useMutation(addCategoriesFunc, {
     onSuccess: () => {
       nav(`${process.env.REACT_APP_BASE_NAME}/categories/`);
 
@@ -272,7 +273,7 @@ function Add({ id, editMode }: AddProps) {
 
               <Box mt={3}>{files.length > 0 && files}</Box>
               {!files[0] && currencyImage && (
-                <img src={currencyImage} width={200} />
+                <img src={currencyImage} width={200} alt="" />
               )}
             </Box>
           </Grid>

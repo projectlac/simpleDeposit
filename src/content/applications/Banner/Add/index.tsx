@@ -3,12 +3,11 @@ import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded';
 
 import { Box, Container, Grid, Typography } from '@mui/material';
 import { styled } from '@mui/system';
-import React, { useCallback, useContext, useState } from 'react';
+import { useCallback, useContext, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Helmet } from 'react-helmet-async';
 import { useMutation } from 'react-query';
 import { useNavigate } from 'react-router';
-import bannerApi from 'src/api/banner';
 import { AuthContext } from 'src/App';
 import DialogBack from 'src/components/Common/Dialog/DialogBack';
 import DialogConfirm from 'src/components/Common/Dialog/DialogConfirm';

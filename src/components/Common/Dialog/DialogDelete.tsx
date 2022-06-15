@@ -1,17 +1,15 @@
-import * as React from 'react';
+import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import { Divider } from '@mui/material';
-import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded';
-import categoriesApi from 'src/api/categoriesApi';
-import { AuthContext } from 'src/App';
+import * as React from 'react';
 import bannerApi from 'src/api/banner';
-import faqApi from 'src/api/faqs';
+import categoriesApi from 'src/api/categoriesApi';
 import collectionApi from 'src/api/collectionApi';
+import faqApi from 'src/api/faqs';
+import { AuthContext } from 'src/App';
 
 interface DialogDeleteProps {
   title: string;

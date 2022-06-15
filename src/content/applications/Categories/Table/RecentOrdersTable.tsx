@@ -1,4 +1,4 @@
-import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined';
+/* eslint-disable react-hooks/exhaustive-deps */
 import EditIcon from '@mui/icons-material/Edit';
 import MenuIcon from '@mui/icons-material/Menu';
 import {
@@ -13,18 +13,18 @@ import {
   TableRow,
   Typography
 } from '@mui/material';
+import _ from 'lodash';
 import { useContext, useEffect, useState } from 'react';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { useMutation, useQuery } from 'react-query';
 import { Link } from 'react-router-dom';
+import { AuthContext } from 'src/App';
 import DialogDelete from 'src/components/Common/Dialog/DialogDelete';
 import {
   getCategoriesFunc,
   orderCategoriesFunc
 } from 'src/function/categories';
 import history from 'src/utils/history';
-import _ from 'lodash';
-import { AuthContext } from 'src/App';
 const RecentOrdersTable = () => {
   const { handleOpenToast, updated, handleChangeMessageToast } =
     useContext(AuthContext);

@@ -12,6 +12,7 @@ import { AuthContext } from 'src/App';
 import ChangePassword from './ChangePassword';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
+import loginApi from 'src/api/loginApi';
 function ForgotPassword() {
   const [checkFillEmail, setCheckFillEmail] = useState<Boolean>(false);
   const [fillEmail, setFillEmail] = useState<string>('');
@@ -31,8 +32,14 @@ function ForgotPassword() {
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      setFillEmail(values.email);
-      setCheckFillEmail(true);
+      loginApi.forgotPassword(values.email).then((res) => {
+        handleChangeMessageToast(res.data.message);
+        handleOpenToast();
+        if (res.data.success) {
+          setFillEmail(values.email);
+          setCheckFillEmail(true);
+        }
+      });
     }
   });
 

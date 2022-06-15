@@ -2,6 +2,7 @@ import { Box, Button, FormControl, TextField, Typography } from '@mui/material';
 import { useFormik } from 'formik';
 import React, { useContext } from 'react';
 import { useNavigate } from 'react-router';
+import loginApi from 'src/api/loginApi';
 import { AuthContext } from 'src/App';
 // import BootstrapInput from 'src/components/Common/BootstrapInput/BootstrapInput';
 // import LabelInput from 'src/components/Common/BootstrapInput/LabelInput';
@@ -37,25 +38,25 @@ function ChangePassword({ email }: PropsChangePassword) {
     validationSchema: validationSchema,
     onSubmit: (values) => {
       const { temporaryPassword, newPassword, confirmNewPassword } = values;
-      // try {
-      //   await loginApi
-      //     .changePassword({
-      //       email: email,
-      //       temporaryPassword: temporary,
-      //       newPassword: password,
-      //       confirmNewPassword: confirm
-      //     })
-      //     .then((res) => {
-      //       if (res.data.success) {
-      //         handleChangeMessageToast(res.data.message);
-      //         handleOpenToast();
-      //         nav(`${process.env.REACT_APP_BASE_NAME}/login`);
-      //       } else {
-      //         handleChangeMessageToast(res.data.message);
-      //         handleOpenToast();
-      //       }
-      //     });
-      // } catch (error) {}
+      try {
+        loginApi
+          .changePassword({
+            email: email,
+            temporaryPassword: temporaryPassword,
+            newPassword: newPassword,
+            confirmNewPassword: confirmNewPassword
+          })
+          .then((res) => {
+            if (res.data.success) {
+              handleChangeMessageToast(res.data.message);
+              handleOpenToast();
+              nav(`${process.env.REACT_APP_BASE_NAME}/login`);
+            } else {
+              handleChangeMessageToast(res.data.message);
+              handleOpenToast();
+            }
+          });
+      } catch (error) {}
     }
   });
 

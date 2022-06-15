@@ -1,13 +1,7 @@
-import {
-  Box,
-  Container,
-  Grid,
-  styled,
-  TextField,
-  Typography
-} from '@mui/material';
+/* eslint-disable react-hooks/exhaustive-deps */
+import { Box, Container, Grid, TextField, Typography } from '@mui/material';
 import { useFormik } from 'formik';
-import React, { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useMutation } from 'react-query';
 import { useNavigate } from 'react-router';
 import faqApi from 'src/api/faqs';
@@ -34,7 +28,7 @@ function Add({ id, editMode }: AddProps) {
   const { handleOpenToast, handleChangeMessageToast } = useContext(AuthContext);
   const nav = useNavigate();
 
-  const { mutate, data, isLoading } = useMutation(addFAQFunc, {
+  const { mutate, data } = useMutation(addFAQFunc, {
     onSuccess: () => {
       nav(`${process.env.REACT_APP_BASE_NAME}/faqs/`);
       handleChangeMessageToast('Create FAQ successfully!!');
