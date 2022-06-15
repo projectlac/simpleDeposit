@@ -36,13 +36,7 @@ interface AddProps {
 function Add({ id, editMode }: AddProps) {
   const validationSchema = yup.object({
     title: yup.string().required('Title is required'),
-    url: yup
-      .string()
-      .matches(
-        /((https?):\/\/)?(www.?)?[a-z0-9]+(\.[a-z]{2,}){1,3}(#?\/?[a-zA-Z0-9#]+)*\/?(\?[a-zA-Z0-9-_]+=[a-zA-Z0-9-%]+&?)?$/,
-        'Enter correct url!'
-      )
-      .required('URL is required')
+    url: yup.string().required('URL is required')
   });
   const { handleOpenToast, handleChangeMessageToast } = useContext(AuthContext);
   const [currencyImage, setCurrencyImage] = useState<string>('');
