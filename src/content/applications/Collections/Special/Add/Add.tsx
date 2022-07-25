@@ -185,7 +185,7 @@ function Add({ id, editMode }: AddProps) {
           <ButtonWrap>
             <DialogBack
               title="Back"
-              link={`/${process.env.REACT_APP_BASE_NAME}/collections/special-collection`}
+              link={`/${process.env.REACT_APP_BASE_NAME}/collections/special-collections`}
             ></DialogBack>
 
             <DialogConfirm

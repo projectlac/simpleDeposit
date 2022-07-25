@@ -1,4 +1,3 @@
-import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined';
 import EditIcon from '@mui/icons-material/Edit';
 import MenuIcon from '@mui/icons-material/Menu';
 import {
@@ -44,6 +43,7 @@ const RecentOrdersTable = () => {
     enabled: false,
     refetchOnWindowFocus: false
   });
+
   const { mutate } = useMutation(orderCollectionFunc, {
     onSuccess: () => {
       handleChangeMessageToast('Update category order successfully!');

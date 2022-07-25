@@ -232,7 +232,7 @@ function Add({ id, editMode }: AddProps) {
                     fontWeight: 'bold'
                   }}
                 >
-                  Colection
+                  Collection
                 </Typography>
                 <FormControl fullWidth>
                   <Select

@@ -2,6 +2,10 @@ import { PromiseApi } from 'src/models';
 import { ICategoriesOrder } from 'src/models/categories';
 import axiosFormDataClient from './axiosFormDataClient';
 import axiosJsonClient from './axiosJsonClient';
+interface IListCollectionItem {
+  index: number;
+  filter: string;
+}
 const collectionApi = {
   addCollection(params: FormData): Promise<PromiseApi> {
     return axiosFormDataClient.post('Collections/create-collection', params);
@@ -11,9 +15,15 @@ const collectionApi = {
       'Collections/list-special-collection?pageSize=13&pageIndex=0'
     );
   },
-  getCollectionItem(): Promise<PromiseApi> {
+  getCollectionItem(params: IListCollectionItem): Promise<PromiseApi> {
+    const filterParams = () => {
+      if (params.filter) return `parentId=${params.filter}&`;
+      else return '';
+    };
     return axiosFormDataClient.get(
-      'Collections/list-collection-item?pageSize=13&pageIndex=0'
+      `Collections/list-collection-item?${filterParams()}pageSize=10&pageIndex=${
+        params.index
+      }`
     );
   },
   getCategoriesById(id: string): Promise<PromiseApi> {
